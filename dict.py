@@ -22,7 +22,7 @@ if __name__ == '__main__':
 
         while True:
             result = {
-                'word' : raw_input('Any words you don`t know yet? ').decode(default_os_encoding),
+                'word' : raw_input('Any words you don`t know yet? '),#.decode(default_os_encoding),
                 'pronunciation' : u'',
                 'explain' : u''
             }
