@@ -1,3 +1,4 @@
+*.ods
 *.pyc
 /.vscode
 /.DS_Store

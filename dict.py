@@ -3,7 +3,7 @@
 
 from lib.onlinedict.impls.bing import OnlineDictBing
 from config.encoding import default_os_encoding
-
+from lib.utils import *
 import pyexcel_ods
 
 if __name__ == '__main__':
@@ -21,21 +21,28 @@ if __name__ == '__main__':
     try:
 
         while True:
-            result = {
-                'word' : raw_input('Any words you don`t know yet? '),#.decode(default_os_encoding),
-                'pronunciation' : u'',
-                'explain' : u''
-            }
-            result['pronunciation'], result['explain'] = online_dict[0].searchWord(result['word'])
-            print result['pronunciation'].encode(default_os_encoding)
-            print result['explain'].encode(default_os_encoding)
-            results['bing'].append([result['word'], result['pronunciation'], result['explain']])
+            word = raw_input('Any words you don`t know yet? ')
 
+            #url中的编码由urlencoding负责处理
+            pronunciation, explain = online_dict[0].searchWord(word)
+            if len(pronunciation) == 0 and len(explain) == 0:
+                print 'no results'
+            else:
+                print pronunciation.encode(default_os_encoding)
+                print explain.encode(default_os_encoding)
+                results['bing'].append([
+                    word.decode(default_os_encoding),
+                    pronunciation,
+                    explain])
+
+        ods_name = '../output/dict/dict' + current_time() + '.ods'
+        print '\r\nsaving search results to ' + ods_name + '...',
+        pyexcel_ods.write_data(ods_name, results)
+        print ('\r\n%d words saved!' % (len(results['bing'])))
 
     except KeyboardInterrupt as e:
         pass
 
+    except IOError as e:
+        print e
 
-    print '\r\nsaving search results to dict.ods...',
-    pyexcel_ods.write_data('dict.ods',results)
-    print ('\r\n%d words saved!' % (len(results['bing'])))
