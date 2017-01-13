@@ -56,6 +56,8 @@ class HTTPOutputFormatter(OutputFormatterConsole):
                 node_title = dom.xpath('//title')
                 if(len(node_title) != 0):
                     print node_title[0].text
+                else:
+                    print job._result['body']
             else:
                  print job._result['code']
 
@@ -73,7 +75,7 @@ class HTTPScanner(JobManager):
 
 if __name__ == '__main__':
     cmd = 'reserve'
-    subnet = netaddr.IPNetwork('198.177.122.6/24')
+    subnet = netaddr.IPNetwork('198.177.122.0/24')
     subnet_first = netaddr.IPAddress(subnet.first)
     subnet_last = netaddr.IPAddress(subnet.last)
     for i in range(0,4):
