@@ -49,7 +49,7 @@ class HTTPOutputFormatter(OutputFormatterConsole):
             elif isinstance(job._error, UnicodeDecodeError) == True:
                 print 'error: page decode error'
             else:
-                print 'error: ', job._error
+                print 'error: ', job._result['code']
         else:
             if len(job._result['body']) != 0:
                 dom = html.fromstring(job._result['body'])
@@ -73,7 +73,7 @@ class HTTPScanner(JobManager):
 
 if __name__ == '__main__':
     cmd = 'reserve'
-    subnet = netaddr.IPNetwork('125.227.207.0/24')
+    subnet = netaddr.IPNetwork('198.177.122.6/24')
     subnet_first = netaddr.IPAddress(subnet.first)
     subnet_last = netaddr.IPAddress(subnet.last)
     for i in range(0,4):

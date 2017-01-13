@@ -72,6 +72,7 @@ class impl_request(method_impl_requests):
             s = requests.Session()
             return s.send(self._request,
                           timeout = self._timeout,
+                          allow_redirects = False,
                           verify = False)
 
         except requests.ConnectTimeout as e:
