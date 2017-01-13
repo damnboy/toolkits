@@ -42,11 +42,79 @@ class get_method_impl_requests(method_impl_requests):
     def __init__(self):
         method_impl_requests.__init__(self)
 
-    def request_and_response(self, url, cookies):
-        return requests.get(url)
+    def request_and_response(self, url):
 
-    def parse_response_data(self, response):
-        return response.text
+        try:
+            return requests.get(url, timeout = self._timeout)
+
+        except requests.ConnectTimeout:
+            raise RuntimeError('requests.ConnectTimeout')
+
+    '''
+        response.text会解码body内容,存在一定开销
+        apparent_encoding 会调用编码检测lib, 尝试检测html页面中文字的编码,开销较大
+    '''
+    def parse_response(self, response):
+        return response.status_code, response.headers, response.content.decode(response.apparent_encoding)
+
+
+
+class impl_request(method_impl_requests):
+
+    def __init__(self, request, timeout):
+        method_impl_requests.__init__(self)
+        self._request = request
+        self._timeout = timeout
+
+    def make_request_and_wait_response(self):
+
+        try:
+            s = requests.Session()
+            return s.send(self._request,
+                          timeout = self._timeout,
+                          verify = False)
+
+        except requests.ConnectTimeout as e:
+            raise RuntimeError('conn timeout')
+        except requests.ConnectionError as e:
+            raise RuntimeError('conn error')
+        except requests.ReadTimeout as e:
+            raise RuntimeError('read timeout')
+
+    '''
+        response.text会解码body内容,存在一定开销
+        apparent_encoding 会调用编码检测lib, 尝试检测html页面中文字的编码,开销较大
+    '''
+    def parse_response(self, response):
+        content = response.content
+        if len(content) != 0:
+            encoding = response.apparent_encoding
+            if encoding == None:
+                encoding = self._prefer_encoding
+            content = content.decode(encoding)
+
+        return response.status_code, response.headers, content
+
+
+    @staticmethod
+    def transformer(fuzz_request):
+        data = None
+        auth = None
+        if(fuzz_request.method in ['POST', 'PUT']):
+            data = fuzz_request.postdata
+
+        if(fuzz_request.getAuth()):
+            auth = None
+
+        req = requests.Request(
+            method = fuzz_request.method,
+            url = fuzz_request.completeUrl,
+            headers = fuzz_request._headers,
+            data = data,
+            auth = auth)
+
+        return impl_request(req.prepare(), fuzz_request.getConnTimeout())
+
 
 if __name__ == '__main__':
     method = get_method_impl_requests()

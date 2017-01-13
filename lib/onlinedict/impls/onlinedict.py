@@ -3,7 +3,7 @@
 
 from lxml import html
 from lib.http.methods import methods
-
+from submodules.wfuzz.framework.fuzzer.fuzzobjects import FuzzRequest
 class OnlineDict:
     def __init__(self):
         ''
@@ -21,9 +21,11 @@ class OnlineDict:
 
         try:
             search_url = self.buildSearchUrl(word)
-
-            unicode_response = methods['requests'].get(search_url)
-            dom_response = html.fromstring(unicode_response)
+            fq = FuzzRequest()
+            fq.setUrl(search_url)
+            method = methods.transformer(fq)
+            unicode_response = method.make_request()
+            dom_response = html.fromstring(unicode_response._response_body)
 
             pronunciation = self.parsePronunciation(dom_response)
             explain = self.parseExplain(dom_response)

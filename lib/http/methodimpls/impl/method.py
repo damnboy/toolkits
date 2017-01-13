@@ -3,7 +3,7 @@
 
 import urlparse
 import random
-
+import config.encoding
 class UserAgents:
     def __init__(self):
         self.random_user_agents =  ['Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20130406 Firefox/23.0', \
@@ -44,34 +44,62 @@ content_decoder = ContentDecoder()
 class method:
 
     def __init__(self):
-        self.error = ''
+        self._prefer_encoding = config.encoding.default_os_encoding
+        self._error = None
+        self._timeout = 5
+        self._cookies = ''
+        self._code = -1
+        self._response_header = {}
+        self._response_body = u''
+
 
     #def request_and_response(url):
 
     #def parse_response(url):
 
-    def request(self, url, cookies=''):
+    def make_request(self):
+        try:
+            self._response = self.make_request_and_wait_response();
+
+            self._code, self._response_header, self._response_body = self.parse_response(self._response)
+
+        except UnicodeDecodeError as e:
+            raise e
+
+        return self
+'''
+    #返回
+    # status code(int)
+    # header(dict)
+    # body(unicode)
+    def request(self, url):
 
         #解析url到成员变量
         ret = urlparse.urlparse(url)
 
-        self.schema = ret[0]
-        if self.schema == 'http' :
-            self.port = 80
-        elif self.schema == 'https':
-            self.port = 443
+        self._schema = ret[0]
+        if self._schema == 'http' :
+            self._port = 80
+        elif self._schema == 'https':
+            self._port = 443
 
         if ret[1].split(':') == 2:
-            self.host, self.port = ret[1].split(':')
+            self._host, self._port = ret[1].split(':')
         else:
-            self.host = ret[1]
+            self._host = ret[1]
 
-        self.path = ret[2]
-        self.params = ret[4]
-        self.cookies = ''
-
-        self.response = self.request_and_response(url, self.cookies);
-        response_data = self.parse_response_data(self.response)
-        return response_data
+        self._path = ret[2]
+        self._params = ret[4]
 
 
+        #包装以下各个lib的异常,统一raise
+        try:
+            self._response = self.request_and_response(url);
+
+            self._code, self._response_header, self._response_body = self.parse_response(self._response)
+
+        except Exception as e:
+            self._error = e
+
+        return self
+'''

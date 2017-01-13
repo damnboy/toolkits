@@ -1,6 +1,6 @@
-#!/opt/local/bin/python
+#!/usr/bin/env python
 #coding=utf-8
-
+import config.dependency
 from lib.onlinedict.impls.bing import OnlineDictBing
 from config.encoding import default_os_encoding
 from lib.utils import *
@@ -35,10 +35,7 @@ if __name__ == '__main__':
                     pronunciation,
                     explain])
 
-        ods_name = '../output/dict/dict' + current_time() + '.ods'
-        print '\r\nsaving search results to ' + ods_name + '...',
-        pyexcel_ods.write_data(ods_name, results)
-        print ('\r\n%d words saved!' % (len(results['bing'])))
+
 
     except KeyboardInterrupt as e:
         pass
@@ -46,3 +43,7 @@ if __name__ == '__main__':
     except IOError as e:
         print e
 
+    ods_name = 'dict_%s.ods' % ( current_time())
+    print '\r\nsaving search results to ' + ods_name + '...',
+    pyexcel_ods.write_data(ods_name, results)
+    print ('\r\n%d words saved!' % (len(results['bing'])))

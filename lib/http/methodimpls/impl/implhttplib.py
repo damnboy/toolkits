@@ -15,6 +15,7 @@ On the other hand, the server may inform the client about timeout situations wit
 504 Gateway Timeout.
 '''
 
+import socket
 import httplib
 from lib.http.methodimpls.impl.method import user_agents, content_decoder, method
 
@@ -33,25 +34,32 @@ class method_impl_httplib(method):
 
     #def custom_request_method(self):
 
-    def request_and_response(self, url, cookies):
+
+    #TODO
+    #if self.schema == 'https' with HTTPSConnection
+    #HTTPConnection中包含socket.getaddrinfo的域名解析调用
+    #该调用不参与超时部分计算
+    #
+    def request_and_response(self, url):
 
         try:
-            http_conn = httplib.HTTPConnection(self.host, self.port)
+            http_conn = httplib.HTTPConnection(self._host, self._port)
+            socket.setdefaulttimeout(self._timeout)
             http_conn.request(self.custom_request_method(),
-                              self.path,
+                              (self._path + '?' + self._params),
                               self.custom_request_body(),
-                              self.custom_request_header(cookies))
+                              self.custom_request_header(self._cookies))
 
             response = http_conn.getresponse()
 
-        except Exception as e:
-            self.error = e
+        except socket.timeout as e:
+            raise e
 
         return response
 
-    def parse_response_data(self, response):
+    def parse_response(self, response):
         response_data = response.read()
-        return response_data.decode(content_decoder.detect(response.msg.dict))
+        return response.status, response.msg, response_data.decode(content_decoder.detect(response.msg.dict))
 
 
 
