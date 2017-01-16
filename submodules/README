@@ -1,0 +1,2 @@
+使用时,需要依次往文件夹内添加__init__.py
+并import config目录下的dependency.py文件
