@@ -36,6 +36,7 @@ class HTTPJob(OneoffJob):
 
         return OneoffJob.do(self)
 
+
 class HTTPOutputFormatter(OutputFormatterConsole):
     def __init__(self):
         OutputFormatterConsole.__init__(self)
@@ -57,6 +58,9 @@ class HTTPOutputFormatter(OutputFormatterConsole):
                 if(len(node_title) != 0):
                     print node_title[0].text
                 else:
+                    if(len(job._result['body']) > 32):
+                        job._result['body'] = job._result['body'][0:32]
+                        job._result['body'] = job._result['body'] + u'...'
                     print job._result['body']
             else:
                  print job._result['code']
@@ -73,16 +77,21 @@ class HTTPScanner(JobManager):
             self._jobQueue.addJob(HTTPJob(index, fuzzReq))
 
 
+'''
+仅能做http类型的扫描
+不同的控制命令增加不同的参数控制逻辑,以及输出格式
+job统一为发送http请求
+'''
 if __name__ == '__main__':
+
     cmd = 'reserve'
-    subnet = netaddr.IPNetwork('198.177.122.0/24')
+    subnet = netaddr.IPNetwork('198.177.122.171/24')
     subnet_first = netaddr.IPAddress(subnet.first)
     subnet_last = netaddr.IPAddress(subnet.last)
     for i in range(0,4):
         cmd = cmd + ' -z range,'
         cmd = cmd + str(subnet_first.words[i]) + '-' + str(subnet_last.words[i])
 
-    #cmd = cmd + ' -z file,wordlist/general/common.txt'
     cmd = cmd + ' http://FUZZ.FUZ2Z.FUZ3Z.FUZ4Z'
     cmd = cmd.split(' ')
     options = CLParser(cmd).parse_cl()
