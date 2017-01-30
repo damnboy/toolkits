@@ -4,6 +4,7 @@
 import random
 import socket
 import config.dependency
+import sys
 from submodules.subbrute.subbrute import *
 
 #https://zh.wikipedia.org/wiki/%E6%A0%B9%E7%B6%B2%E5%9F%9F%E5%90%8D%E7%A8%B1%E4%BC%BA%E6%9C%8D%E5%99%A8
@@ -169,7 +170,13 @@ class domain_resolver :
 
 
 if __name__ == '__main__':
-    domain = 'qq.com'
+
+    if len(sys.argv) < 2:
+        domain = raw_input('请输入域名: ')
+    else:
+        domain = sys.argv[1]
+
+    print '正在对目标 %s 执行域名信息查询' % (domain)
     r = domain_resolver(domain)
     ns_records =  r.get_domain_ns()
     print '在域名 %s 上检测到 %d 条NS记录' % (domain, len(ns_records))
