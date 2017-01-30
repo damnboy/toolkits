@@ -85,7 +85,7 @@ job统一为发送http请求
 if __name__ == '__main__':
 
     cmd = 'reserve'
-    subnet = netaddr.IPNetwork('198.177.122.171/24')
+    subnet = netaddr.IPNetwork('198.177.122.0/24')
     subnet_first = netaddr.IPAddress(subnet.first)
     subnet_last = netaddr.IPAddress(subnet.last)
     for i in range(0,4):

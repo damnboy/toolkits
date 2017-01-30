@@ -1,3 +1,6 @@
 [submodule "submodules/wfuzz"]
 	path = submodules/wfuzz
 	url = https://github.com/xmendez/wfuzz.git
+[submodule "submodules/subbrute"]
+	path = submodules/subbrute
+	url = https://github.com/TheRook/subbrute.git

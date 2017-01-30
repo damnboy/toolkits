@@ -1,0 +1,17 @@
+subbrute/dnslib/dns.py
+行366中的revc方法返回为空,导致unpack时出现 unpack requires a string argument of length 2
+
+Traceback (most recent call last):
+  File "/Applications/PyCharm CE.app/Contents/helpers/pydev/pydevd.py", line 2403, in <module>
+    globals = debugger.run(setup['file'], None, None, is_module)
+  File "/Applications/PyCharm CE.app/Contents/helpers/pydev/pydevd.py", line 1794, in run
+    launch(file, globals, locals)  # execute the script
+  File "/Users/ponytail/Git/code/toolkits/dns.py", line 10, in <module>
+    ns_servers = r.get_authoritative('baidu.com')
+  File "/Users/ponytail/Git/code/toolkits/submodules/subbrute/subbrute.py", line 136, in get_authoritative
+    a_lookup = self.query(record.rstrip("."), 'A')
+  File "/Users/ponytail/Git/code/toolkits/submodules/subbrute/subbrute.py", line 73, in query
+    raise IOError(str(e))
+IOError: unpack requires a string argument of length 2
+
+
